@@ -1,21 +1,25 @@
-from tkinter import Label
 import tensorflow as tf
 import numpy as np
+import os.path 
+from os import path 
 
 
 class DigitClassifier:
     def __init__(self):
-        # create the layers
-        self.model = tf.keras.Sequential ( [
-            tf.keras.layers.Flatten(input_shape=(28, 28)),
-            tf.keras.layers.Dense(128, activation="relu"),
-            tf.keras.layers.Dense(10, activation="softmax")
-        ])
+        if (path.exists("saved_model/")):
+            self.model = tf.keras.models.load_model("saved_model/")
+        else:
+            # create the layers
+            self.model = tf.keras.Sequential ( [
+                tf.keras.layers.Flatten(input_shape=(28, 28)),
+                tf.keras.layers.Dense(128, activation="relu"),
+                tf.keras.layers.Dense(10, activation="softmax")
+            ])
 
-        # build the neural network
-        self.model.compile(optimizer="adam",
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
+            # build the neural network
+            self.model.compile(optimizer="adam",
+                loss='sparse_categorical_crossentropy',
+                metrics=['accuracy'])
 
     def fit(self):
         # load the dataset 
@@ -25,6 +29,7 @@ class DigitClassifier:
 
         #train
         self.model.fit(train_data, train_labels, epochs=5)
+        self.model.save("saved_model/")
 
     def predict(self, X):
         # X must be 3 dimensional (x, 28, 28)
