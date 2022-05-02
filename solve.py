@@ -2,8 +2,8 @@ from utils.utils import read_img, display_imgs
 from utils.extract_grid import extract_grid
 
 import tensorflow as tf
-import numpy as np
 from utils.digit_classifier import DigitClassifier
+
 
 def test_model():
     mnist = tf.keras.datasets.mnist
@@ -21,7 +21,7 @@ def main():
 
     # isolate sudoku from rest of the image
     img_grid = extract_grid(img)
-    
+
     display_imgs([img, img_grid], ["original", "grid"])
 
 
