@@ -24,14 +24,11 @@ class DigitClassifier:
                 metrics=["accuracy"],
             )
 
-    def fit(self):
-        # load the dataset
-        mnist = tf.keras.datasets.mnist
-        (train_data, train_labels), (test_data, test_labels) = mnist.load_data()
-        train_data = train_data / 255
+    def fit(self, X, y):
+        # train the model
+        self.model.fit(X, y, epochs=10)
 
-        # train
-        self.model.fit(train_data, train_labels, epochs=5)
+        # save the model
         self.model.save("saved_model/")
 
     def predict(self, X):
@@ -44,3 +41,9 @@ class DigitClassifier:
 
         # return an array of predicted digit of the image
         return np.argmax(predict, axis=1)
+
+    def evaluate(self, X, y):
+        # evaluate the model
+        loss, acc = self.model.evaluate(X, y)
+        print("loss:", loss)
+        print("acc:", acc)
