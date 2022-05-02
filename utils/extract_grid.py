@@ -76,24 +76,12 @@ def extract_grid(img):
 
     # calculate the width
     width_1 = distance_to_origin(int(corners[3][0] - corners[2][0]), int(corners[3][1] - corners[2][1]))
-    # np.sqrt(
-    #     ((corners[3][0] - corners[2][0]) ** 2) + ((corners[3][1] - corners[2][1]) ** 2)
-    # )
     width_2 = distance_to_origin(int(corners[0][0] - corners[1][0]), int(corners[0][1] - corners[1][1]))
-    # np.sqrt(
-    #     ((corners[0][0] - corners[1][0]) ** 2) + ((corners[0][1] - corners[1][1]) ** 2)
-    # )
     width = max(int(width_1), int(width_2))
 
     # calculate the height
     height_1 = distance_to_origin(int(corners[0][0] - corners[3][0]), int(corners[0][1] - corners[3][1]))
-    # np.sqrt(
-    #     ((corners[0][0] - corners[3][0]) ** 2) + ((corners[0][1] - corners[3][1]) ** 2)
-    # )
     height_2 = distance_to_origin(int(corners[1][0] - corners[2][0]), int(corners[1][1] - corners[2][1]))
-    # np.sqrt(
-    #     ((corners[1][0] - corners[2][0]) ** 2) + ((corners[1][1] - corners[2][1]) ** 2)
-    # )
     height = max(int(height_1), int(height_2))
 
     # define the dimension
