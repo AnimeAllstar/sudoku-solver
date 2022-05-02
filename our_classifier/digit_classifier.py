@@ -32,18 +32,16 @@ class DigitClassifier:
         self.model.save("./our_classifier/saved_model/")
 
     def predict(self, X):
-        # X must be 3 dimensional (x, 28, 28)
-        if X.ndim != 3:
-            X.reshape(-1, 28, 28)
-
         # make prediction
         predict = self.model.predict(X)
 
         # return an array of predicted digit of the image
-        return np.argmax(predict, axis=1)
+        return np.argmax(predict)
 
     def evaluate(self, X, y):
         # evaluate the model
         loss, acc = self.model.evaluate(X, y)
         print("loss:", loss)
         print("acc:", acc)
+
+        

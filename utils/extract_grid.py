@@ -50,6 +50,7 @@ def order_the_corners(grid_points):
         {k: v for k, v in sorted(magnitudes.items(), key=lambda item: item[1])}.items()
     )
 
+    # find the orientation of the image
     top_left = corners[sorted_magnitudes[0][0]]
     bottom_right = corners[sorted_magnitudes[3][0]]
     if corners[sorted_magnitudes[1][0]][0] > corners[sorted_magnitudes[2][0]][0]:
@@ -100,4 +101,4 @@ def extract_grid(img):
     img_warped = cv.warpPerspective(img_proc, real_grid, (width, height))
 
     # invert the image
-    return cv.bitwise_not(img_warped)
+    return img_warped
