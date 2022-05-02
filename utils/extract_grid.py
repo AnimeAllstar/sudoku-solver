@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 
+from utils.utils import distance_to_origin
+
 
 def process_image(img):
     # blur the image to reduce noise
@@ -40,9 +42,26 @@ def order_the_corners(grid_points):
     # convert the data points to vector of tuples
     corners = [(grid[0][0], grid[0][1]) for grid in grid_points]
 
+    magnitudes = {}
+    for i in range(len(corners)):
+        magnitudes[i] = distance_to_origin(corners[i][0], corners[i][1])
+
+    sorted_magnitudes = list(
+        {k: v for k, v in sorted(magnitudes.items(), key=lambda item: item[1])}.items()
+    )
+
+    top_left = corners[sorted_magnitudes[0][0]]
+    bottom_right = corners[sorted_magnitudes[3][0]]
+    if corners[sorted_magnitudes[1][0]][0] > corners[sorted_magnitudes[2][0]][0]:
+        top_right = corners[sorted_magnitudes[1][0]]
+        bottom_left = corners[sorted_magnitudes[2][0]]
+    else:
+        top_right = corners[sorted_magnitudes[2][0]]
+        bottom_left = corners[sorted_magnitudes[1][0]]
+
     # reorder the corners in the following order:
     # top left, top right, bottom right, bottom left
-    return corners[1], corners[0], corners[3], corners[2]
+    return top_left, top_right, bottom_right, bottom_left
 
 
 def extract_grid(img):
@@ -85,5 +104,8 @@ def extract_grid(img):
     # calculate the perspective transform matrix
     real_grid = cv.getPerspectiveTransform(corners, dimensions)
 
-    # warp the perspective to grab the screen
-    return cv.warpPerspective(img_proc, real_grid, (width, height))
+    # warp the image
+    img_warped = cv.warpPerspective(img_proc, real_grid, (width, height))
+
+    # invert the image
+    return cv.bitwise_not(img_warped)

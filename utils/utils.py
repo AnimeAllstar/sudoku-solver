@@ -37,3 +37,10 @@ def display_imgs(imgs, window_names=None):
         cv.imshow(window_name, img)
     cv.waitKey(0)
     cv.destroyAllWindows()
+
+
+def distance_to_origin(x, y):
+    """
+    Returns the distance of a point to the origin.
+    """
+    return ((x**2) + (y**2)) ** 0.5
