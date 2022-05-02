@@ -69,7 +69,7 @@ def extract_grid(img):
 
     # calculate the perspective transform matrix 
     real_grid = cv.getPerspectiveTransform(corners, dimensions)
-    
+
     # warp the perspective to grab the screen
     return cv.warpPerspective(img_proc, real_grid, (width, height))
 
