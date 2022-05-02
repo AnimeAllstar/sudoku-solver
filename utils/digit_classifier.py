@@ -1,34 +1,34 @@
 import tensorflow as tf
 import numpy as np
-import os.path 
-from os import path 
+from os import path
 
 
 class DigitClassifier:
     def __init__(self):
-        if (path.exists("saved_model/")):
+        if path.exists("saved_model/"):
             self.model = tf.keras.models.load_model("saved_model/")
         else:
             # create the layers
-            self.model = tf.keras.Sequential ( [
-                tf.keras.layers.Flatten(input_shape=(28, 28)),
-                tf.keras.layers.Dense(128, activation="relu"),
-                tf.keras.layers.Dense(10, activation="softmax")
-            ])
+            self.model = tf.keras.Sequential(
+                [
+                    tf.keras.layers.Flatten(input_shape=(28, 28)),
+                    tf.keras.layers.Dense(128, activation="relu"),
+                    tf.keras.layers.Dense(10, activation="softmax"),
+                ]
+            )
 
             # build the neural network
-            self.model.compile(optimizer="adam",
-                loss='sparse_categorical_crossentropy',
-                metrics=['accuracy'])
+            self.model.compile(
+                optimizer="adam",
+                loss="sparse_categorical_crossentropy",
+                metrics=["accuracy"],
+            )
 
-    def fit(self):
-        # load the dataset 
-        mnist = tf.keras.datasets.mnist
-        (train_data, train_labels), (test_data, test_labels) = mnist.load_data()
-        train_data = train_data / 255
+    def fit(self, X, y):
+        # train the model
+        self.model.fit(X, y, epochs=10)
 
-        #train
-        self.model.fit(train_data, train_labels, epochs=5)
+        # save the model
         self.model.save("saved_model/")
 
     def predict(self, X):
@@ -39,6 +39,11 @@ class DigitClassifier:
         # make prediction
         predict = self.model.predict(X)
 
-        # return an array of predicted digit of the image 
+        # return an array of predicted digit of the image
         return np.argmax(predict, axis=1)
 
+    def evaluate(self, X, y):
+        # evaluate the model
+        loss, acc = self.model.evaluate(X, y)
+        print("loss:", loss)
+        print("acc:", acc)
