@@ -11,7 +11,7 @@ def grid_to_array(grid):
     (h, w) = grid.shape
     cell_h, cell_w = h // 9, w // 9
 
-    # Splits the sudoku grid image into 81 cells images array to store cells
+    # Empty 9x9 array to store the cells
     cropped_cells = np.zeros((9, 9, cell_h, cell_w))
 
     for i in range(9):
