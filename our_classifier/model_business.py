@@ -3,6 +3,7 @@ import cv2 as cv
 from our_classifier.digit_classifier import DigitClassifier
 from utils.utils import read_img
 
+
 def train_model():
     mnist = tf.keras.datasets.mnist
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -29,12 +30,13 @@ def eval_model():
     model = DigitClassifier()
     model.evaluate(x_test, y_test)
 
+
 def test_with_single_image():
-    X = read_img("./numbers/two.png")
+    X = read_img('./numbers/two.png')
+    X = cv.bitwise_not(X)
     X = cv.resize(X, (28, 28))
     X = X.reshape((-1, 28, 28))
     X = X / 255.0
     model = DigitClassifier()
     predict = model.predict(X)
     print(predict)
-
