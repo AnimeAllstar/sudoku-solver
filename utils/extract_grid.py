@@ -25,7 +25,7 @@ def process_image(img):
 
 def find_grid(img):
     # find contours of the image
-    contours, hierarchy = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    contours = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)[0]
 
     # sort the contour such that contours[0] is the largest polygon
     contours = sorted(contours, key=cv.contourArea, reverse=True)
