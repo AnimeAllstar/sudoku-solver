@@ -26,7 +26,7 @@ class DigitClassifier:
 
     def fit(self, X, y):
         # train the model
-        self.model.fit(X, y, epochs=10)
+        self.model.fit(X, y, epochs=7)
 
         # save the model
         self.model.save("./our_classifier/saved_model/")

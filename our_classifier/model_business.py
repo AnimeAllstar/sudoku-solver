@@ -1,5 +1,7 @@
 import tensorflow as tf
 import cv2 as cv
+import numpy as np
+import pandas as pd
 from our_classifier.digit_classifier import DigitClassifier
 from utils.utils import read_img
 
@@ -47,3 +49,5 @@ def test_with_single_image():
     model = DigitClassifier()
     predict = model.predict(X)
     print(predict)
+
+
