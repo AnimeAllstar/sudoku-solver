@@ -5,11 +5,18 @@ from utils.utils import read_img
 
 
 def train_model():
-    mnist = tf.keras.datasets.mnist
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    X_train = X_train.reshape(X_train.shape[0], 28, 28, 1).astype('float32')
-    X_train = X_train.astype('float32')
+    file = pd.read_csv("./our_classifier/training_data/TMNIST_Data.csv")
+    x_train = file.drop(columns={"names", "labels"})
+    y_train = file[["labels"]]
+    x_train = x_train.values.reshape(-1, 28, 28).astype('float32')
+    x_train = x_train.astype('float32')
     x_train = x_train / 255.0
+
+    mnist = tf.keras.datasets.mnist
+    (x_train_2, y_train_2), (x_test, y_test) = mnist.load_data()
+    y_train_2 = y_train_2.reshape(-1, 1)
+    x_train = np.concatenate((x_train, x_train_2))
+    y_train = np.concatenate((y_train, y_train_2))
     model = DigitClassifier()
     model.fit(x_train, y_train)
 
