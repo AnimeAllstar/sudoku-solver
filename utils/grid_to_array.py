@@ -18,9 +18,36 @@ def find_digit(cell): # not yet done
     # change it back to image type  
     cell = cell.astype(np.uint8)
     # find the contours 
-    digit_contour, h = cv.findContours(cell, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    # digit_contour = sorted(digit_contour, key=cv.contourArea, reverse=True)
+    digit_contour = cv.findContours(cell, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     digit_contour = digit_contour[0] if len(digit_contour) == 2 else digit_contour[1]
+
+    # focus on smaller area
+    min_area = 0.50 * cell.shape[0] * cell.shape[1]
+    digit_contour = [c for c in digit_contour if cv.contourArea(c) < min_area]
+
+    # sort the contour in desending order
+    digit_contour = sorted(digit_contour, key=cv.contourArea, reverse=True)
+    
+    for c in digit_contour:
+        # get the approximate height and width of the digit
+        x,y,w,h = cv.boundingRect(c)
+
+        # uncomment to check if the image is cropped
+        # if (x, y, w, h) = (0,0,53,50), then the cell is not cropped
+        # print(x, y, w, h)
+
+        # if it is not cropped
+        if (x < 4 or y < 4): 
+            x += 5
+            y += 5
+        if (w >= cell.shape[0] or w >= cell.shape[1]):
+            w -= 5
+        if (h >= cell.shape[0] or h >= cell.shape[1]):
+            h -= 5
+
+        # crop the image
+        ROI = cell[y:y+h, x:x+w]
+        return ROI
 
 
 def grid_to_array(grid):
@@ -55,21 +82,19 @@ def grid_to_array(grid):
 
             # not yet done
             if cell_has_digit(tmp_cell):
-                cell = cv.resize(cropped_cells[i][j], (28, 28))
-                cell = cell.astype('float32')
-                cell = cell.reshape((-1, 28, 28))
-                cell = cell / 255.0
-                digits[i][j] = model.predict(cell)
+                # crop the image
+                digit = find_digit(cropped_cells[i][j])
+
+                # resize for prediction
+                digit = cv.resize(digit, (28, 28))
+                digit = digit.astype('float32')
+                digit = digit.reshape((-1, 28, 28))
+                digit = digit / 255.0
+
+                # predict 
+                digits[i][j] = model.predict(digit)
             else:
                 digits[i][j] = -1
-
-            
-            # TODO: Instead of storing images into cropped_cells,
-            # use grid[i * cell_h : (i + 1) * cell_h, j * cell_w : (j + 1) * cell_w] to get the value, and store the values
-            # if cropped_cells[i][j] is empty, then mark array[i][j] as empty (-1)
-            # if it is not empty, add it to X
-            # pass X to the model get predictions for all non-empty cells
-            # update the array with the predictions
     
     print(digits)
 
