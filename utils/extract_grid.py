@@ -25,7 +25,7 @@ def process_image(img):
 
 def find_grid(img):
     # find contours of the image
-    contours, hierarchy = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    contours = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)[0]
 
     # sort the contour such that contours[0] is the largest polygon
     contours = sorted(contours, key=cv.contourArea, reverse=True)
@@ -42,26 +42,29 @@ def order_the_corners(grid_points):
     # convert the data points to vector of tuples
     corners = [(grid[0][0], grid[0][1]) for grid in grid_points]
 
+    # calculate the distance to origin for each corner
     magnitudes = {}
     for i in range(len(corners)):
         magnitudes[i] = distance_to_origin(corners[i][0], corners[i][1])
 
+    # sort the corners based on the distance to origin
     sorted_magnitudes = list(
         {k: v for k, v in sorted(magnitudes.items(), key=lambda item: item[1])}.items()
     )
 
-    top_left = corners[sorted_magnitudes[0][0]]
-    bottom_right = corners[sorted_magnitudes[3][0]]
-    if corners[sorted_magnitudes[1][0]][0] > corners[sorted_magnitudes[2][0]][0]:
-        top_right = corners[sorted_magnitudes[1][0]]
-        bottom_left = corners[sorted_magnitudes[2][0]]
-    else:
-        top_right = corners[sorted_magnitudes[2][0]]
-        bottom_left = corners[sorted_magnitudes[1][0]]
+    corners_dict = {}
 
-    # reorder the corners in the following order:
-    # top left, top right, bottom right, bottom left
-    return top_left, top_right, bottom_right, bottom_left
+    # define which corner is top left, top right, bottom left and bottom right using the magnitudes
+    corners_dict["top_left"] = corners[sorted_magnitudes[0][0]]
+    corners_dict["bottom_right"] = corners[sorted_magnitudes[3][0]]
+    if corners[sorted_magnitudes[1][0]][0] > corners[sorted_magnitudes[2][0]][0]:
+        corners_dict["top_right"] = corners[sorted_magnitudes[1][0]]
+        corners_dict["bottom_left"] = corners[sorted_magnitudes[2][0]]
+    else:
+        corners_dict["top_right"] = corners[sorted_magnitudes[2][0]]
+        corners_dict["bottom_left"] = corners[sorted_magnitudes[1][0]]
+
+    return corners_dict
 
 
 def extract_grid(img):
@@ -75,26 +78,26 @@ def extract_grid(img):
     corners = order_the_corners(grid_contour)
 
     # calculate the width
-    width_1 = distance_to_origin(int(corners[3][0] - corners[2][0]), int(corners[3][1] - corners[2][1]))
-    # np.sqrt(
-    #     ((corners[3][0] - corners[2][0]) ** 2) + ((corners[3][1] - corners[2][1]) ** 2)
-    # )
-    width_2 = distance_to_origin(int(corners[0][0] - corners[1][0]), int(corners[0][1] - corners[1][1]))
-    # np.sqrt(
-    #     ((corners[0][0] - corners[1][0]) ** 2) + ((corners[0][1] - corners[1][1]) ** 2)
-    # )
-    width = max(int(width_1), int(width_2))
+    bottom_len = distance_to_origin(
+        int(corners["bottom_left"][0] - corners["bottom_right"][0]),
+        int(corners["bottom_left"][1] - corners["bottom_right"][1]),
+    )
+    top_len = distance_to_origin(
+        int(corners["top_left"][0] - corners["top_right"][0]),
+        int(corners["top_left"][1] - corners["top_right"][1]),
+    )
+    width = max(int(bottom_len), int(top_len))
 
     # calculate the height
-    height_1 = distance_to_origin(int(corners[0][0] - corners[3][0]), int(corners[0][1] - corners[3][1]))
-    # np.sqrt(
-    #     ((corners[0][0] - corners[3][0]) ** 2) + ((corners[0][1] - corners[3][1]) ** 2)
-    # )
-    height_2 = distance_to_origin(int(corners[1][0] - corners[2][0]), int(corners[1][1] - corners[2][1]))
-    # np.sqrt(
-    #     ((corners[1][0] - corners[2][0]) ** 2) + ((corners[1][1] - corners[2][1]) ** 2)
-    # )
-    height = max(int(height_1), int(height_2))
+    left_len = distance_to_origin(
+        int(corners["top_left"][0] - corners["bottom_left"][0]),
+        int(corners["top_left"][1] - corners["bottom_left"][1]),
+    )
+    right_len = distance_to_origin(
+        int(corners["top_right"][0] - corners["bottom_right"][0]),
+        int(corners["top_right"][1] - corners["bottom_right"][1]),
+    )
+    height = max(int(left_len), int(right_len))
 
     # define the dimension
     dimensions = np.array(
@@ -103,7 +106,15 @@ def extract_grid(img):
     )
 
     # convert the data points to numpy array
-    corners = np.array(corners, dtype="float32")
+    corners = np.array(
+        [
+            corners["top_left"],
+            corners["top_right"],
+            corners["bottom_right"],
+            corners["bottom_left"],
+        ],
+        dtype="float32",
+    )
 
     # calculate the perspective transform matrix
     real_grid = cv.getPerspectiveTransform(corners, dimensions)
@@ -112,4 +123,4 @@ def extract_grid(img):
     img_warped = cv.warpPerspective(img_proc, real_grid, (width, height))
 
     # invert the image
-    return cv.bitwise_not(img_warped)
+    return img_warped
