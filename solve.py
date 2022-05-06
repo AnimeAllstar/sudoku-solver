@@ -1,4 +1,4 @@
-from tkinter.dialog import DIALOG_ICON
+from solver.test import test
 from utils.grid_to_array import grid_to_array
 from utils.utils import read_img, display_imgs
 from utils.extract_grid import extract_grid
@@ -7,7 +7,6 @@ from our_classifier.model_business import (
     train_model,
     test_with_single_image,
 )
-from our_classifier.digit_classifier import DigitClassifier
 
 
 def main():
@@ -23,4 +22,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    test()
