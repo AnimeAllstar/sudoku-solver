@@ -3,7 +3,7 @@ from solver.sudoku import Sudoku
 
 
 def test():
-    puzzle = py_Sudoku(3).difficulty(0.5)
+    puzzle = py_Sudoku(3).difficulty(0.9)
     print("empty grid:")
     puzzle.show()
     solution = puzzle.solve()
@@ -13,7 +13,7 @@ def test():
     sudoku = Sudoku(grid)
     sudoku.solve()
     print("our solution:")
-    sudoku.show()
+    sudoku.show(solution=True)
 
 
 def None_to_zero(grid):
