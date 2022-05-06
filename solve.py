@@ -1,3 +1,4 @@
+from solver.sudoku import Sudoku
 from solver.test import test
 from utils.grid_to_array import grid_to_array
 from utils.utils import read_img, display_imgs
@@ -18,6 +19,13 @@ def main():
     # isolate sudoku from rest of the image
     img_grid = extract_grid(img)
     array_grid = grid_to_array(img_grid)
+    
+    # this will not work currently since the number extraction is not 100% accurate
+    # the app will have a method to edit the extracted grid before the sudoku is solved
+    # sudoku = Sudoku(array_grid)
+    # sudoku.solve()
+    # sudoku.show(solution=True)
+    
     # display_imgs([img, img_grid], ["original", "grid"])
 
 
