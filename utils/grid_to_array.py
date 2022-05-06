@@ -33,7 +33,7 @@ def find_digit(cell): # not yet done
         x,y,w,h = cv.boundingRect(c)
 
         # uncomment to check if the image is cropped
-        # if (x, y, w, h) = (0,0,53,50), then the cell is not cropped
+        # if (x, y, w, h) == (0,0,53,50), then the cell is not cropped
         # print(x, y, w, h)
 
         # if it is not cropped
@@ -77,8 +77,8 @@ def grid_to_array(grid):
             # cv.waitKey(0)
 
             # crop out the center of the grid to check if there's digit 
-            tmp_cell = grid[i * cell_h + cell_h // 6 : i * cell_h + 5 * (cell_h // 6), 
-                            j * cell_w + cell_w // 6 : j * cell_w + 5 * (cell_w // 6)]
+            tmp_cell = grid[i * cell_h + cell_h // 4 : i * cell_h + 3 * (cell_h // 4), 
+                            j * cell_w + cell_w // 4 : j * cell_w + 3 * (cell_w // 4)]
 
             # not yet done
             if cell_has_digit(tmp_cell):
@@ -88,7 +88,7 @@ def grid_to_array(grid):
                 # resize for prediction
                 digit = cv.resize(digit, (28, 28))
                 digit = digit.astype('float32')
-                digit = digit.reshape((-1, 28, 28))
+                digit = digit.reshape((-1, 28, 28, 1))
                 digit = digit / 255.0
 
                 # predict 
