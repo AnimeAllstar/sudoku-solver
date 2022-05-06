@@ -58,5 +58,3 @@ def test_with_single_image():
     model = DigitClassifier()
     predict = model.predict(X)
     print(predict)
-
-

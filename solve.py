@@ -2,8 +2,13 @@ from tkinter.dialog import DIALOG_ICON
 from utils.grid_to_array import grid_to_array
 from utils.utils import read_img, display_imgs
 from utils.extract_grid import extract_grid
-from our_classifier.model_business import eval_model, train_model, test_with_single_image
+from our_classifier.model_business import (
+    eval_model,
+    train_model,
+    test_with_single_image,
+)
 from our_classifier.digit_classifier import DigitClassifier
+
 
 def main():
     # Restriction on image:
@@ -16,6 +21,6 @@ def main():
     array_grid = grid_to_array(img_grid)
     # display_imgs([img, img_grid], ["original", "grid"])
 
+
 if __name__ == "__main__":
     main()
-   

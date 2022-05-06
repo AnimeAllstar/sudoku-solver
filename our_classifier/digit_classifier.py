@@ -11,14 +11,16 @@ class DigitClassifier:
             # create the layers
             self.model = tf.keras.Sequential(
                 [
-                     tf.keras.layers.Conv2D(filters=10,
-                                kernel_size=3, 
-                                activation="relu", 
-                                input_shape=(28,  28,  1)),
-                     tf.keras.layers.Conv2D(10,  3, activation="relu"),
-                     tf.keras.layers.MaxPool2D(),
-                     tf.keras.layers.Flatten(),
-                     tf.keras.layers.Dense(10, activation="softmax")
+                    tf.keras.layers.Conv2D(
+                        filters=10,
+                        kernel_size=3,
+                        activation="relu",
+                        input_shape=(28, 28, 1),
+                    ),
+                    tf.keras.layers.Conv2D(10, 3, activation="relu"),
+                    tf.keras.layers.MaxPool2D(),
+                    tf.keras.layers.Flatten(),
+                    tf.keras.layers.Dense(10, activation="softmax"),
                 ]
             )
 
@@ -48,5 +50,3 @@ class DigitClassifier:
         loss, acc = self.model.evaluate(X, y)
         print("loss:", loss)
         print("acc:", acc)
-
-        
