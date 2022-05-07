@@ -30,5 +30,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
-    test()
+    # test()
+    # train_model()
+    main()

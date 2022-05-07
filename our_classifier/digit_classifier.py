@@ -5,8 +5,8 @@ from os import path
 
 class DigitClassifier:
     def __init__(self):
-        if path.exists("./our_classifier/saved_model/"):
-            self.model = tf.keras.models.load_model("./our_classifier/saved_model/")
+        if path.exists("./our_classifier/saved_model/digit_classifier.h5"):
+            self.model = tf.keras.models.load_model("./our_classifier/saved_model/digit_classifier.h5")
         else:
             # create the layers
             self.model = tf.keras.Sequential(
@@ -36,7 +36,7 @@ class DigitClassifier:
         self.model.fit(X, y, epochs=10)
 
         # save the model
-        self.model.save("./our_classifier/saved_model/")
+        self.model.save("./our_classifier/saved_model/digit_classifier.h5")
 
     def predict(self, X):
         # make prediction
