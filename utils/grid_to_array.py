@@ -99,7 +99,7 @@ def grid_to_array(grid):
                 # predict
                 digits[i][j] = model.predict(digit)
             else:
-                digits[i][j] = -1
+                digits[i][j] = 0
 
     print(digits)
 

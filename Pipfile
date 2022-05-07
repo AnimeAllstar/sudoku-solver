@@ -11,6 +11,7 @@ pandas = "*"
 
 [dev-packages]
 black = "*"
+py-sudoku = "*"
 
 [requires]
 python_version = "3.10"
