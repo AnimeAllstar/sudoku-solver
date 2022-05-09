@@ -1,0 +1,51 @@
+#:import TextInput kivy.uix.textinput.TextInput
+
+<MainPage>:
+    Label: 
+        text: 'Sudoku Solver App'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        Image:
+            
+        Button:
+            text: 'Use This Photo'
+            size_hint_x: 0.1
+            on_release: 
+                root.manager.current = 'AdjustmentPage'
+                root.manager.transition.direction = 'left'
+
+
+<AdjustmentPage>:
+    Label: 
+            text: 'Make Adjustment'
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+            Image:
+                
+            Button:
+                text: 'Return to Home'
+                size_hint_x: 0.1
+                on_release: 
+                    root.manager.current = 'SolutionPage'
+                    root.manager.transition.direction = 'left'
+
+<SolutionPage>:
+    Label: 
+            text: 'Solution'
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+            GridLayour:
+                cols: 9
+                rows: 9
+                on_parent:
+                    for i in range(10): self.add_widget(TextInput(text=))
+
+            Button:
+                text: 'Return to Home'
+                size_hint_x: 0.1
+                on_release: 
+                    root.manager.current = 'MainPage'
+                    root.manager.transition.direction = 'right'
