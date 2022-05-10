@@ -1,46 +1,56 @@
+#:kivy 2.1.0
 <MainPage>:
     name: 'mainPage'
     BoxLayout:
         orientation: 'vertical'
         padding: 10
+        size: self.parent.size
+        pos: self.parent.pos
         Image:
             id: sudoku
         Button:
-            text: 'Use This Photo'
-            size_hint_x: 0.1
+            text: 'Click'
+            size_hint_x: 0.5
+            size_hint_y: 0.1
             on_release: 
                 root.predict_numbers()
-                
-
+        Button:
+            text: 'Test Image'
+            size_hint_x: 0.5
+            size_hint_y: 0.1
+            on_release: 
+                root.predict_numbers(test=True)
 
 <AdjustmentPage>:
     name: 'adjustmentPage'
-        BoxLayout:
-            orientation: 'vertical'
-            padding: 10
-
-            GridLayout:
-                cols: 9
-                rows: 9
-                on_parent:
-                    root.addInputBoxes()
-            Button:
-                text: 'Confirm'
-                size_hint_x: 0.1
-                on_release: 
-                    root.get_adjustment()
+    grid: grid
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        GridLayout:
+            id: grid
+            cols: 9
+            rows: 9
+            on_parent:
+                root.addInputBoxes()
+        Button:
+            size_hint_x: 0.5
+            size_hint_y: 0.1
+            text: 'Confirm'
+            on_release: 
+                root.get_adjustment()
 
 <SolutionPage>:
     name: 'solutionPage'
-        BoxLayout:
-            orientation: 'vertical'
-            padding: 10
-
-            Image:
-                id: solution
-            Button:
-                text: 'Return to Home'
-                size_hint_x: 0.1
-                on_release: 
-                    root.manager.current = 'mainPage'
-                    root.manager.transition.direction = 'right'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        Image:
+            id: solution
+        Button:
+            size_hint_x: 0.5
+            size_hint_y: 0.1
+            text: 'Return to Home'
+            on_release: 
+                root.manager.current = 'mainPage'
+                root.manager.transition.direction = 'right'
