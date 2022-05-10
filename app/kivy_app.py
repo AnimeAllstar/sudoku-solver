@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import numpy as np
 from our_classifier.digit_classifier import DigitClassifier
+from solver.sudoku import Sudoku
 from utils.utils import read_img
 from utils.extract_grid import extract_grid
 from utils.grid_to_array import grid_to_array
@@ -97,12 +98,16 @@ class AdjustmentPage(Screen):
                 self.grid.add_widget(self.text_inputs[i][j])
 
     def get_adjustment(self):
-        global predicted_digits
+        global predicted_digits, solution
         for i in range(9):
             for j in range(9):
                 predicted_digits[i][j] = self.text_inputs[i][j].text
 
-        # TODO: solve the sudoku (using sudoku class) and save it to solution
+        sudoku = Sudoku(predicted_digits)
+        sudoku.solve()
+        sudoku.show(solution=True)
+        solution = sudoku.solution
+
         # change screen to adjustment page
         self.manager.add_widget(SolutionPage())
         self.manager.current = 'solutionPage'
@@ -110,7 +115,7 @@ class AdjustmentPage(Screen):
 
 class SolutionPage(Screen):
     def on_enter(self, *args):
-        # TODO: show the solution (as image (id in screens.kv / labels )
+        # TODO: show the solution (as image (id in screens.kv / labels)
         pass
 
 
