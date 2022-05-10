@@ -1,51 +1,46 @@
-#:import TextInput kivy.uix.textinput.TextInput
-
 <MainPage>:
-    Label: 
-        text: 'Sudoku Solver App'
+    name: 'mainPage'
     BoxLayout:
         orientation: 'vertical'
         padding: 10
         Image:
-            
+            id: sudoku
         Button:
             text: 'Use This Photo'
             size_hint_x: 0.1
             on_release: 
-                root.manager.current = 'AdjustmentPage'
-                root.manager.transition.direction = 'left'
+                root.predict_numbers()
+                
 
 
 <AdjustmentPage>:
-    Label: 
-            text: 'Make Adjustment'
+    name: 'adjustmentPage'
         BoxLayout:
             orientation: 'vertical'
             padding: 10
-            Image:
-                
-            Button:
-                text: 'Return to Home'
-                size_hint_x: 0.1
-                on_release: 
-                    root.manager.current = 'SolutionPage'
-                    root.manager.transition.direction = 'left'
 
-<SolutionPage>:
-    Label: 
-            text: 'Solution'
-        BoxLayout:
-            orientation: 'vertical'
-            padding: 10
-            GridLayour:
+            GridLayout:
                 cols: 9
                 rows: 9
                 on_parent:
-                    for i in range(10): self.add_widget(TextInput(text=))
+                    root.addInputBoxes()
+            Button:
+                text: 'Confirm'
+                size_hint_x: 0.1
+                on_release: 
+                    root.get_adjustment()
 
+<SolutionPage>:
+    name: 'solutionPage'
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+
+            Image:
+                id: solution
             Button:
                 text: 'Return to Home'
                 size_hint_x: 0.1
                 on_release: 
-                    root.manager.current = 'MainPage'
+                    root.manager.current = 'mainPage'
                     root.manager.transition.direction = 'right'
