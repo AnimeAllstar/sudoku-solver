@@ -19,12 +19,15 @@ class Sudoku:
         else:
             self.grid = np.zeros((self.N, self.N), dtype=int)
 
+    # setter 
     def set(self, row, col, num):
         self.grid[row][col] = num
 
+    # getter
     def get(self, row, col):
         return self.grid[row][col]
 
+    # solve the sudoku using check_solvable function
     def solve(self):
         if self.solution is None:
             self.unsolved = self.grid.copy()
@@ -33,6 +36,7 @@ class Sudoku:
             return True
         return False
 
+    
     def check_solvable(self, row, col):
         if row == self.N - 1 and col == self.N:
             return True
@@ -66,9 +70,11 @@ class Sudoku:
                     return False
         return True
 
+    # return solution
     def solution(self):
         return self.solution
 
+    # print solution on console
     def show(self, solution=False):
         if solution:
             print(self.solution)
