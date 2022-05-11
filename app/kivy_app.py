@@ -91,8 +91,9 @@ class AdjustmentPage(Screen):
 
         for i in range(9):
             for j in range(9):
+                txt = '' if predicted_digits[i][j] == 0 else str(predicted_digits[i][j])
                 self.text_inputs[i][j] = TextInput(
-                    text=str(predicted_digits[i][j]),
+                    text=txt,
                     multiline=False,
                 )
                 self.grid.add_widget(self.text_inputs[i][j])
@@ -101,7 +102,10 @@ class AdjustmentPage(Screen):
         global predicted_digits, solution
         for i in range(9):
             for j in range(9):
-                predicted_digits[i][j] = self.text_inputs[i][j].text
+                if self.text_inputs[i][j].text == '':
+                    predicted_digits[i][j] = 0
+                else:
+                    predicted_digits[i][j] = self.text_inputs[i][j].text.strip()
 
         sudoku = Sudoku(predicted_digits)
         sudoku.solve()
