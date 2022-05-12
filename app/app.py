@@ -17,11 +17,13 @@ from utils.utils import read_img
 from utils.extract_grid import extract_grid
 from utils.grid_to_array import grid_to_array
 
-
+# define widgets properties
 screens = Builder.load_file("screens.kv")
+# set window background color
 Window.clearcolor = (1, 1, 1, 1)
-# 9x9 matrix to save the predicted digits and the solution of the sudoku
+# 9x9 matrix to save the predicted digits
 predicted_digits = np.zeros(shape=(9, 9))
+# 9x9 matrix to save the solution of the sudoku
 solution = np.zeros(shape=(9, 9))
 
 class MainPage(Screen):
@@ -40,7 +42,7 @@ class MainPage(Screen):
             self.schedule.cancel()
             self.schedule = None
 
-    # function called to update the camera image constantly
+    # update the camera image (called constantly in main page)
     def update_camera(self, *args):
         # read frame from our video capture object
         ret, frame = self.capture.read()
@@ -54,7 +56,7 @@ class MainPage(Screen):
         # setting the texture for our sudoku image (define in screens.kv)
         self.ids.sudoku.texture = texture
 
-    # function called when "use this photo" button is pressed
+    # capture image from camera and predict numbers (use this photo button)
     def predict_numbers(self, test=False):
         global predicted_digits
         # save image from camera to a path
@@ -80,7 +82,7 @@ class MainPage(Screen):
             # change screen to adjustment page
             self.manager.current = 'adjustmentPage'
         else:
-            self.manager.current = 'noSolutionPage'
+            self.manager.current = 'noSudokuPage'
 
 
 class AdjustmentPage(Screen):
@@ -108,7 +110,7 @@ class AdjustmentPage(Screen):
                 txt = '' if predicted_digits[i][j] == 0 else str(predicted_digits[i][j])
                 self.text_inputs[i][j].text = txt
 
-    # get adjustment from the user 
+    # get adjustment from the user (confirm button)
     def get_adjustment(self):
         global predicted_digits, solution
         for i in range(9):
@@ -131,6 +133,9 @@ class AdjustmentPage(Screen):
 class NoSolutionPage(Screen):
     pass
 
+class NoSudokuPage(Screen):
+    pass
+
 class SolutionPage(Screen):
     def __init__(self, **kw):
         self.solution_labels = np.ndarray(shape=(9, 9), dtype=Label)
@@ -141,8 +146,8 @@ class SolutionPage(Screen):
         for i in range(9):
             for j in range(9):
                 self.solution_labels[i][j] = Label(
-                    text='[color=434445]' + str(solution[i][j])+ '[/color]', 
-                    markup=True,
+                    text=' ', 
+                    markup=True
                     )
                 self.grid.add_widget(self.solution_labels[i][j])
 
@@ -150,7 +155,10 @@ class SolutionPage(Screen):
     def on_enter(self, *args):
         for i in range(9):
             for j in range(9):
-                self.solution_labels[i][j].text = '[color=434445]' + str(solution[i][j])+ '[/color]'
+                if predicted_digits[i][j] != 0:
+                    self.solution_labels[i][j].text = '[color=434445]' + str(solution[i][j])+ '[/color]'
+                else:
+                    self.solution_labels[i][j].text = '[color=e05f38]' + str(solution[i][j])+ '[/color]'
                 
 
 
@@ -159,9 +167,9 @@ class SudokuSolverApp(App):
         sm = ScreenManager(transition=NoTransition())
         sm.add_widget(MainPage())
         sm.add_widget(AdjustmentPage())
-        sm.add_widget(NoSolutionPage())
         sm.add_widget(SolutionPage())
-               
+        sm.add_widget(NoSolutionPage())
+        sm.add_widget(NoSudokuPage())       
         return sm
 
 if __name__ == '__main__':
