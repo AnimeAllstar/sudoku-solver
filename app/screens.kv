@@ -9,13 +9,13 @@
         Image:
             id: sudoku
         Button:
-            text: 'Click'
+            text: 'Use This Photo'
             size_hint_x: 0.5
             size_hint_y: 0.1
             on_release: 
                 root.predict_numbers()
         Button:
-            text: 'Test Image'
+            text: 'Use Test Image'
             size_hint_x: 0.5
             size_hint_y: 0.1
             on_release: 
@@ -42,11 +42,31 @@
 
 <SolutionPage>:
     name: 'solutionPage'
+    grid: grid
     BoxLayout:
         orientation: 'vertical'
         padding: 10
-        Image:
-            id: solution
+        GridLayout:
+            id: grid
+            cols: 9
+            rows: 9
+            on_parent:
+                root.showSolution()
+        Button:
+            size_hint_x: 0.5
+            size_hint_y: 0.1
+            text: 'Return to Home'
+            on_release: 
+                root.manager.current = 'mainPage'
+                root.manager.transition.direction = 'right'
+
+<NoSolutionPage>:
+    name: 'noSolutionPage'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        Label:
+            text: 'No Solution for this sudoku'
         Button:
             size_hint_x: 0.5
             size_hint_y: 0.1

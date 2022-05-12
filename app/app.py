@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.textinput import TextInput
+from kivy.uix.label import Label
 from kivy.graphics.texture import Texture
 from kivy.clock import Clock
 from kivy.lang import Builder
@@ -20,8 +21,8 @@ from utils.grid_to_array import grid_to_array
 
 screens = Builder.load_file("screens.kv")
 # 9x9 matrix to save the predicted digits and the solution of the sudoku
-global predicted_digits, solution
-predicted_digits, solution = None, None
+predicted_digits = np.zeros(shape=(9, 9))
+solution = np.zeros(shape=(9, 9))
 
 
 class MainPage(Screen):
@@ -57,7 +58,6 @@ class MainPage(Screen):
     # function called when "use this photo" button is pressed
     def predict_numbers(self, test=False):
         global predicted_digits
-
         # save image from camera to a path
         ret, frame = self.capture.read()
 
@@ -87,8 +87,6 @@ class AdjustmentPage(Screen):
         super().__init__(**kw)
 
     def addInputBoxes(self):
-        global predicted_digits
-
         for i in range(9):
             for j in range(9):
                 txt = '' if predicted_digits[i][j] == 0 else str(predicted_digits[i][j])
@@ -108,19 +106,29 @@ class AdjustmentPage(Screen):
                     predicted_digits[i][j] = self.text_inputs[i][j].text.strip()
 
         sudoku = Sudoku(predicted_digits)
-        sudoku.solve()
-        sudoku.show(solution=True)
-        solution = sudoku.solution
-
-        # change screen to adjustment page
-        self.manager.add_widget(SolutionPage())
-        self.manager.current = 'solutionPage'
-
+        solvable = sudoku.solve()
+        if solvable:    
+            solution = sudoku.solution
+            # change screen to adjustment page
+            self.manager.add_widget(SolutionPage())
+            self.manager.current = 'solutionPage'
+        else :
+            self.manager.add_widget(NoSolutionPage())
+            self.manager.current = 'noSolutionPage'
+        
+        
+class NoSolutionPage(Screen):
+    pass
 
 class SolutionPage(Screen):
-    def on_enter(self, *args):
-        # TODO: show the solution (as image (id in screens.kv / labels)
-        pass
+    def __init__(self, **kw):
+        super().__init__(**kw)
+
+    def showSolution(self):
+        for i in range(9):
+            for j in range(9):
+                self.grid.add_widget(Label(text=str(solution[i][j])))
+        
 
 
 class SudokuSolverApp(App):
