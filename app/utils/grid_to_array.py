@@ -1,4 +1,5 @@
 from operator import truediv
+import re
 import cv2 as cv
 import numpy as np
 from our_classifier.digit_classifier import DigitClassifier
@@ -11,8 +12,13 @@ def cell_has_digit(cell):
     """
     num_white_pixel = np.sum(cell == 255)
     num_black_pixel = np.sum(cell == 0)
+    
+    if num_black_pixel == 0:
+        return 0
+    
     if num_white_pixel / num_black_pixel > 0.3:
         return 1
+    
     return 0
 
 
@@ -64,7 +70,7 @@ def grid_to_array(grid):
     cropped_cells = np.zeros((9, 9, cell_h, cell_w))
 
     # empty 9x9 array to store the digits
-    digits = np.zeros((9, 9))
+    digits = np.zeros((9, 9), dtype=np.int)
 
     # our model
     model = DigitClassifier()
@@ -100,7 +106,5 @@ def grid_to_array(grid):
                 digits[i][j] = model.predict(digit)
             else:
                 digits[i][j] = 0
-
-    print(digits)
 
     return digits

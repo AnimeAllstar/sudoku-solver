@@ -1,0 +1,96 @@
+#:kivy 2.1.0
+<MainPage>:
+    name: 'mainPage'
+    RelativeLayout:
+        size: self.parent.size
+        pos: self.parent.pos
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+            
+            Image:
+                id: sudoku
+            Button:
+                text: 'Use This Photo'
+                size_hint_x: 0.5
+                size_hint_y: 0.1
+                on_release: 
+                    root.predict_numbers()
+            Button:
+                text: 'Use Test Image'
+                size_hint_x: 0.5
+                size_hint_y: 0.1
+                on_release: 
+                    root.predict_numbers(test=True)
+
+<AdjustmentPage>:
+    name: 'adjustmentPage'
+    grid: grid
+    RelativeLayout:
+        size: self.parent.size
+        pos: self.parent.pos
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+            
+            GridLayout:
+                id: grid
+                cols: 9
+                rows: 9
+                on_parent:
+                    root.addInputBoxes()
+            Button:
+                size_hint_x: 0.5
+                size_hint_y: 0.1
+                text: 'Confirm'
+                on_release: 
+                    root.get_adjustment()
+
+<SolutionPage>:
+    name: 'solutionPage'
+    grid: grid
+    RelativeLayout:
+        size: self.parent.size
+        pos: self.parent.pos
+        
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+            
+            GridLayout:
+                id: grid
+                cols: 9
+                rows: 9
+                on_parent:
+                    root.showSolution()
+            Button:
+                size_hint_x: 0.5
+                size_hint_y: 0.1
+                text: 'Return to Home'
+                on_release: 
+                    root.manager.current = 'mainPage'
+                    root.manager.transition.direction = 'right'
+
+<NoSolutionPage>:
+    name: 'noSolutionPage'
+    RelativeLayout:
+        size: self.parent.size
+        pos: self.parent.pos
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+            
+            Label:
+                text: '[color=434445]No Solution[/color]'
+                markup: True
+            Button:
+                size_hint_x: 0.5
+                size_hint_y: 0.1
+                text: 'Return to Home'
+                on_release: 
+                    root.manager.current = 'mainPage'
+                    root.manager.transition.direction = 'right'
+

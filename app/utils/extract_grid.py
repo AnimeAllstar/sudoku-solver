@@ -36,7 +36,7 @@ def find_grid(img):
         approx = cv.approxPolyDP(c, epsilon, True)
         if len(approx) == 4:
             return approx
-
+    return None
 
 def order_the_corners(grid_points):
     # convert the data points to vector of tuples
@@ -74,6 +74,8 @@ def extract_grid(img):
     # find the contours
     grid_contour = find_grid(img_proc)
 
+    if grid_contour is None:
+        return None
     # convert that to points
     corners = order_the_corners(grid_contour)
 
