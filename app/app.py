@@ -8,11 +8,9 @@ from kivy.lang import Builder
 
 
 import cv2 as cv
-import tensorflow as tf
 import os
 from pathlib import Path
 import numpy as np
-from our_classifier.digit_classifier import DigitClassifier
 from solver.sudoku import Sudoku
 from utils.utils import read_img
 from utils.extract_grid import extract_grid
@@ -23,7 +21,6 @@ screens = Builder.load_file("screens.kv")
 # 9x9 matrix to save the predicted digits and the solution of the sudoku
 predicted_digits = np.zeros(shape=(9, 9))
 solution = np.zeros(shape=(9, 9))
-
 
 class MainPage(Screen):
     def __init__(self, **kw):
@@ -73,12 +70,15 @@ class MainPage(Screen):
 
         # extract grid from the image
         img_grid = extract_grid(img)
-        # get the predicted array of digits
-        predicted_digits = grid_to_array(img_grid)
 
-        # change screen to adjustment page
-        self.manager.add_widget(AdjustmentPage())
-        self.manager.current = 'adjustmentPage'
+        if img_grid is not None:
+            # get the predicted array of digits
+            predicted_digits = grid_to_array(img_grid)
+
+            # change screen to adjustment page
+            self.manager.current = 'adjustmentPage'
+        else:
+            self.manager.current = 'noSolutionPage'
 
 
 class AdjustmentPage(Screen):
@@ -86,6 +86,7 @@ class AdjustmentPage(Screen):
         self.text_inputs = np.ndarray(shape=(9, 9), dtype=TextInput)
         super().__init__(**kw)
 
+    # add input boxes for user to adjust the predicted numbers
     def addInputBoxes(self):
         for i in range(9):
             for j in range(9):
@@ -96,6 +97,14 @@ class AdjustmentPage(Screen):
                 )
                 self.grid.add_widget(self.text_inputs[i][j])
 
+    # update the input boxes whenever the screen is displayed     
+    def on_enter(self, *args):
+        for i in range(9):
+            for j in range(9):
+                txt = '' if predicted_digits[i][j] == 0 else str(predicted_digits[i][j])
+                self.text_inputs[i][j].text = txt
+
+    # get adjustment from the user 
     def get_adjustment(self):
         global predicted_digits, solution
         for i in range(9):
@@ -110,10 +119,8 @@ class AdjustmentPage(Screen):
         if solvable:    
             solution = sudoku.solution
             # change screen to adjustment page
-            self.manager.add_widget(SolutionPage())
             self.manager.current = 'solutionPage'
         else :
-            self.manager.add_widget(NoSolutionPage())
             self.manager.current = 'noSolutionPage'
         
         
@@ -122,21 +129,33 @@ class NoSolutionPage(Screen):
 
 class SolutionPage(Screen):
     def __init__(self, **kw):
+        self.solution_labels = np.ndarray(shape=(9, 9), dtype=Label)
         super().__init__(**kw)
 
+    # add labels to show the solution of the sudoku
     def showSolution(self):
         for i in range(9):
             for j in range(9):
-                self.grid.add_widget(Label(text=str(solution[i][j])))
-        
+                self.solution_labels[i][j] = Label(text=str(solution[i][j]))
+                self.grid.add_widget(self.solution_labels[i][j])
+
+    # update the labels whenever the screen is displayed 
+    def on_enter(self, *args):
+        for i in range(9):
+            for j in range(9):
+                self.solution_labels[i][j].text = str(solution[i][j])
+                
 
 
 class SudokuSolverApp(App):
     def build(self):
         sm = ScreenManager(transition=NoTransition())
         sm.add_widget(MainPage())
+        sm.add_widget(AdjustmentPage())
+        sm.add_widget(NoSolutionPage())
+        sm.add_widget(SolutionPage())
+               
         return sm
-
 
 if __name__ == '__main__':
     SudokuSolverApp().run()
