@@ -5,6 +5,7 @@ from kivy.uix.label import Label
 from kivy.graphics.texture import Texture
 from kivy.clock import Clock
 from kivy.lang import Builder
+from kivy.core.window import Window
 
 
 import cv2 as cv
@@ -18,6 +19,7 @@ from utils.grid_to_array import grid_to_array
 
 
 screens = Builder.load_file("screens.kv")
+Window.clearcolor = (1, 1, 1, 1)
 # 9x9 matrix to save the predicted digits and the solution of the sudoku
 predicted_digits = np.zeros(shape=(9, 9))
 solution = np.zeros(shape=(9, 9))
@@ -94,6 +96,8 @@ class AdjustmentPage(Screen):
                 self.text_inputs[i][j] = TextInput(
                     text=txt,
                     multiline=False,
+                    write_tab=False, 
+                    halign='center'
                 )
                 self.grid.add_widget(self.text_inputs[i][j])
 
@@ -136,14 +140,17 @@ class SolutionPage(Screen):
     def showSolution(self):
         for i in range(9):
             for j in range(9):
-                self.solution_labels[i][j] = Label(text=str(solution[i][j]))
+                self.solution_labels[i][j] = Label(
+                    text='[color=434445]' + str(solution[i][j])+ '[/color]', 
+                    markup=True,
+                    )
                 self.grid.add_widget(self.solution_labels[i][j])
 
     # update the labels whenever the screen is displayed 
     def on_enter(self, *args):
         for i in range(9):
             for j in range(9):
-                self.solution_labels[i][j].text = str(solution[i][j])
+                self.solution_labels[i][j].text = '[color=434445]' + str(solution[i][j])+ '[/color]'
                 
 
 
