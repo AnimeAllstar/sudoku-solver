@@ -17,6 +17,7 @@ from solver.sudoku import Sudoku
 from utils.utils import read_img
 from utils.extract_grid import extract_grid
 from utils.grid_to_array import grid_to_array
+from functools import partial
 
 # define widgets properties
 screens = Builder.load_file("screens.kv")
@@ -107,22 +108,63 @@ class CorrectionPage(Screen):
     def __init__(self, **kw):
         self.cells = np.ndarray(shape=(9, 9), dtype=ButtonCell)
         self.selected = None
+        self.location = None
         super().__init__(**kw)
+
+    # bind keyboard events when screen is displayed
+    def on_pre_enter(self, *args):
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        return super().on_pre_enter(*args)
+
+    # release keyboard when leaving the screen
+    def on_leave(self, *args):
+        self._keyboard.release()
+        return super().on_leave(*args)
+
+    # callback function that will be called when the keyboard is closed
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    # called when a key is pressed
+    # if the key is a valid number, update the selected cell
+    # if the key is a direction, simulate a click in the direction
+    # if the key is backspace or delete, clear the selected cell
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if self.selected:
+            row, col = self.location
+            code, value = keycode
+            if value == 'right':
+                self.handle_cell_press(self.cells[row, (col + 1) % 9], row, (col + 1) % 9)
+            elif value == 'left':
+                self.handle_cell_press(self.cells[row, (col - 1) % 9], row, (col - 1) % 9)
+            elif value == 'up':
+                self.handle_cell_press(self.cells[(row - 1) % 9, col], (row - 1) % 9, col)
+            elif value == 'down':
+                self.handle_cell_press(self.cells[(row + 1) % 9, col], (row + 1) % 9, col)
+            elif ord('1') <= code <= ord('9'):
+                self.selected.text = value
+            elif value == 'backspace' or value == 'delete':
+                self.selected.text = ''
+        else:
+            # if no cell is selected, do not accept any key, it will be used by the system.
+            return False
 
     # update the selected cells value with the input clicked
     def update_cell(self, input):
-        if self.selected is not None:
+        if self.selected:
             self.selected.text = input.text
 
     # clear the selected cell
     def clear_cell(self, input):
-        if self.selected is not None:
+        if self.selected:
             self.selected.text = ''
 
     # handle cell press event for cell from the grid
-    def handle_cell_press(self, cell):
+    def handle_cell_press(self, cell, row, col):
         # if a cell is already selected, unselect it
-        if self.selected is not None:
+        if self.selected:
             self.selected.state = 'normal'
             self.selected.color = (0, 0, 0, 1)
 
@@ -130,6 +172,7 @@ class CorrectionPage(Screen):
         self.selected = cell
         self.selected.state = 'down'
         self.selected.color = (1, 1, 1, 1)
+        self.location = (row, col)
 
     # add input buttons
     def add_input_buttons(self):
@@ -145,7 +188,8 @@ class CorrectionPage(Screen):
             for j in range(9):
                 txt = '' if predicted_digits[i][j] == 0 else str(predicted_digits[i][j])
                 self.cells[i][j] = ButtonCell(text=txt)
-                self.cells[i][j].bind(on_press=self.handle_cell_press)
+                callback = partial(self.handle_cell_press, row=i, col=j)
+                self.cells[i][j].bind(on_press=callback)
                 self.grid.add_widget(self.cells[i][j])
 
     # update the input boxes whenever the screen is displayed
@@ -199,7 +243,7 @@ class SolutionPage(Screen):
     def showSolution(self):
         for i in range(9):
             for j in range(9):
-                self.solution_labels[i][j] = LabelCell(text=' ')
+                self.solution_labels[i][j] = LabelCell(text='')
                 self.grid.add_widget(self.solution_labels[i][j])
 
     # update the labels whenever the screen is displayed
