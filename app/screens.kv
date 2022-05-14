@@ -26,8 +26,8 @@
 <LabelCell@Cell>:
     background_down: ''
 
-<MainPage>:
-    name: 'mainPage'
+<CameraPage>:
+    name: 'cameraPage'
     BoxLayout:
         orientation: 'vertical'
             
@@ -51,8 +51,8 @@
                 on_release: 
                     root.predict_numbers(test=True)
 
-<AdjustmentPage>:
-    name: 'adjustmentPage'
+<CorrectionPage>:
+    name: 'correctionPage'
     grid: grid
     inputs: inputs
     BoxLayout:
@@ -122,7 +122,7 @@
             ButtonPrimary:
                 text: 'Return to Home'
                 on_release: 
-                    root.manager.current = 'mainPage'
+                    root.manager.current = 'cameraPage'
 
 <NoSolutionPage>:
     name: 'noSolutionPage'
@@ -141,7 +141,7 @@
             ButtonPrimary:
                 text: 'Return to Home'
                 on_release: 
-                    root.manager.current = 'mainPage'
+                    root.manager.current = 'cameraPage'
 
 <NoSudokuPage>:
     name: 'noSudokuPage'
@@ -160,4 +160,4 @@
             ButtonPrimary:
                 text: 'Return to Home'
                 on_release: 
-                    root.manager.current = 'mainPage'
+                    root.manager.current = 'cameraPage'

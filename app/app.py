@@ -28,7 +28,23 @@ predicted_digits = np.zeros(shape=(9, 9))
 solution = np.zeros(shape=(9, 9))
 
 
-class MainPage(Screen):
+class Cell(ToggleButton):
+    pass
+
+
+class ButtonCell(Cell):
+    pass
+
+
+class LabelCell(Cell):
+    pass
+
+
+class ButtonInput(Button):
+    pass
+
+
+class CameraPage(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         # define our video capture object
@@ -44,7 +60,7 @@ class MainPage(Screen):
             self.schedule.cancel()
             self.schedule = None
 
-    # update the camera image (called constantly in main page)
+    # update the camera image (called constantly in CameraPage)
     def update_camera(self, *args):
         # read frame from our video capture object
         ret, frame = self.capture.read()
@@ -81,29 +97,13 @@ class MainPage(Screen):
             # get the predicted array of digits
             predicted_digits = grid_to_array(img_grid)
 
-            # change screen to adjustment page
-            self.manager.current = 'adjustmentPage'
+            # change screen to CorrectionPage
+            self.manager.current = 'correctionPage'
         else:
             self.manager.current = 'noSudokuPage'
 
 
-class Cell(ToggleButton):
-    pass
-
-
-class ButtonCell(Cell):
-    pass
-
-
-class LabelCell(Cell):
-    pass
-
-
-class ButtonInput(Button):
-    pass
-
-
-class AdjustmentPage(Screen):
+class CorrectionPage(Screen):
     def __init__(self, **kw):
         self.cells = np.ndarray(shape=(9, 9), dtype=ButtonCell)
         self.selected = None
@@ -176,7 +176,7 @@ class AdjustmentPage(Screen):
 
         if solvable:
             solution = sudoku.solution
-            # change screen to adjustment page
+            # change screen to solutionPage
             self.manager.current = 'solutionPage'
         else:
             self.manager.current = 'noSolutionPage'
@@ -212,8 +212,8 @@ class SolutionPage(Screen):
 class SudokuSolverApp(App):
     def build(self):
         sm = ScreenManager(transition=NoTransition())
-        sm.add_widget(MainPage())
-        sm.add_widget(AdjustmentPage())
+        sm.add_widget(CameraPage())
+        sm.add_widget(CorrectionPage())
         sm.add_widget(SolutionPage())
         sm.add_widget(NoSolutionPage())
         sm.add_widget(NoSudokuPage())
