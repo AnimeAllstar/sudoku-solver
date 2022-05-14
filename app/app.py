@@ -1,7 +1,9 @@
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
-from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
+from kivy.uix.togglebutton import ToggleButton
+from kivy.uix.button import Button
+
 from kivy.graphics.texture import Texture
 from kivy.clock import Clock
 from kivy.lang import Builder
@@ -9,7 +11,6 @@ from kivy.core.window import Window
 
 
 import cv2 as cv
-import os
 from pathlib import Path
 import numpy as np
 from solver.sudoku import Sudoku
@@ -25,6 +26,7 @@ Window.clearcolor = (1, 1, 1, 1)
 predicted_digits = np.zeros(shape=(9, 9))
 # 9x9 matrix to save the solution of the sudoku
 solution = np.zeros(shape=(9, 9))
+
 
 class MainPage(Screen):
     def __init__(self, **kw):
@@ -85,56 +87,108 @@ class MainPage(Screen):
             self.manager.current = 'noSudokuPage'
 
 
+class Cell(ToggleButton):
+    pass
+
+
+class ButtonCell(Cell):
+    pass
+
+
+class LabelCell(Cell):
+    pass
+
+
+class ButtonInput(Button):
+    pass
+
+
 class AdjustmentPage(Screen):
     def __init__(self, **kw):
-        self.text_inputs = np.ndarray(shape=(9, 9), dtype=TextInput)
+        self.cells = np.ndarray(shape=(9, 9), dtype=ButtonCell)
+        self.selected = None
         super().__init__(**kw)
 
-    # add input boxes for user to adjust the predicted numbers
-    def addInputBoxes(self):
+    # update the selected cells value with the input clicked
+    def update_cell(self, input):
+        if self.selected is not None:
+            self.selected.text = input.text
+
+    # clear the selected cell
+    def clear_cell(self, input):
+        if self.selected is not None:
+            self.selected.text = ''
+
+    # handle cell press event for cell from the grid
+    def handle_cell_press(self, cell):
+        # if a cell is already selected, unselect it
+        if self.selected is not None:
+            self.selected.state = 'normal'
+            self.selected.color = (0, 0, 0, 1)
+
+        # set self.selected to cell
+        self.selected = cell
+        self.selected.state = 'down'
+        self.selected.color = (1, 1, 1, 1)
+
+    # add input buttons
+    def add_input_buttons(self):
+        for i in range(9):
+            self.inputs.add_widget(
+                ButtonInput(text=str(i + 1), on_press=self.update_cell)
+            )
+        self.inputs.add_widget(ButtonInput(text='X', on_press=self.clear_cell))
+
+    # add buttons representing each cell for the user to click on to select
+    def add_cell_buttons(self):
         for i in range(9):
             for j in range(9):
                 txt = '' if predicted_digits[i][j] == 0 else str(predicted_digits[i][j])
-                self.text_inputs[i][j] = TextInput(
-                    text=txt,
-                    multiline=False,
-                    write_tab=False, 
-                    halign='center'
-                )
-                self.grid.add_widget(self.text_inputs[i][j])
+                self.cells[i][j] = ButtonCell(text=txt)
+                self.cells[i][j].bind(on_press=self.handle_cell_press)
+                self.grid.add_widget(self.cells[i][j])
 
-    # update the input boxes whenever the screen is displayed     
+    # update the input boxes whenever the screen is displayed
     def on_enter(self, *args):
         for i in range(9):
             for j in range(9):
                 txt = '' if predicted_digits[i][j] == 0 else str(predicted_digits[i][j])
-                self.text_inputs[i][j].text = txt
+                self.cells[i][j].text = txt
 
-    # get adjustment from the user (confirm button)
-    def get_adjustment(self):
+    # solve the sudoku
+    def solve(self):
         global predicted_digits, solution
+
         for i in range(9):
             for j in range(9):
-                if self.text_inputs[i][j].text == '':
+                if self.cells[i][j].text == '':
                     predicted_digits[i][j] = 0
                 else:
-                    predicted_digits[i][j] = self.text_inputs[i][j].text.strip()
+                    predicted_digits[i][j] = self.cells[i][j].text
 
         sudoku = Sudoku(predicted_digits)
         solvable = sudoku.solve()
-        if solvable:    
+
+        # reset selected cell to normal
+        if self.selected is not None:
+            self.selected.state = 'normal'
+            self.selected.color = (0, 0, 0, 1)
+
+        if solvable:
             solution = sudoku.solution
             # change screen to adjustment page
             self.manager.current = 'solutionPage'
-        else :
+        else:
             self.manager.current = 'noSolutionPage'
-        
-        
+
+
 class NoSolutionPage(Screen):
     pass
 
+
 class NoSudokuPage(Screen):
     pass
+
 
 class SolutionPage(Screen):
     def __init__(self, **kw):
@@ -145,21 +199,14 @@ class SolutionPage(Screen):
     def showSolution(self):
         for i in range(9):
             for j in range(9):
-                self.solution_labels[i][j] = Label(
-                    text=' ', 
-                    markup=True
-                    )
+                self.solution_labels[i][j] = LabelCell(text=' ')
                 self.grid.add_widget(self.solution_labels[i][j])
 
-    # update the labels whenever the screen is displayed 
+    # update the labels whenever the screen is displayed
     def on_enter(self, *args):
         for i in range(9):
             for j in range(9):
-                if predicted_digits[i][j] != 0:
-                    self.solution_labels[i][j].text = '[color=434445]' + str(solution[i][j])+ '[/color]'
-                else:
-                    self.solution_labels[i][j].text = '[color=e05f38]' + str(solution[i][j])+ '[/color]'
-                
+                self.solution_labels[i][j].text = str(solution[i][j])
 
 
 class SudokuSolverApp(App):
@@ -169,8 +216,9 @@ class SudokuSolverApp(App):
         sm.add_widget(AdjustmentPage())
         sm.add_widget(SolutionPage())
         sm.add_widget(NoSolutionPage())
-        sm.add_widget(NoSudokuPage())       
+        sm.add_widget(NoSudokuPage())
         return sm
+
 
 if __name__ == '__main__':
     SudokuSolverApp().run()

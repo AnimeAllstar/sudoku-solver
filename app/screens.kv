@@ -1,41 +1,94 @@
 #:kivy 2.1.0
+#:import utils kivy.utils
+
+<ButtonPrimary@Button>:
+    background_normal: ''
+    background_color: utils.get_color_from_hex('#0d6efd')
+
+<ButtonInput@Button>:
+    background_normal: ''
+    background_color: 255, 255, 255, 1
+    color: utils.get_color_from_hex('#0d6efd')
+
+<Cell@ToggleButton>:
+    background_normal: ''
+    color: 0, 0, 0, 1
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Line:
+            width: 2
+            rectangle: self.x, self.y, self.width, self.height
+
+<ButtonCell@Cell>:
+    background_down: './assets/images/cell_selected.png'
+
+<LabelCell@Cell>:
+    background_down: ''
+
 <MainPage>:
     name: 'mainPage'
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
             
         Image:
             id: sudoku
-        Button:
-            text: 'Use This Photo'
-            size_hint: 1, .1
-            on_release: 
-                root.predict_numbers()
-        Button:
-            text: 'Use Test Image'
-            size_hint: 1, .1
-            on_release: 
-                root.predict_numbers(test=True)
+            size_hint: 1, 0.8
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 0.1
+            padding:50, 10
+            ButtonPrimary:
+                text: 'Click'
+                on_release: 
+                    root.predict_numbers()
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 0.1
+            padding:50, 10
+            ButtonPrimary:
+                text: 'Use Test Image'
+                on_release: 
+                    root.predict_numbers(test=True)
 
 <AdjustmentPage>:
     name: 'adjustmentPage'
     grid: grid
+    inputs: inputs
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
-        
+        padding: 10, 50, 10, 5
+        size_hint: 1, 1
+
         GridLayout:
             id: grid
             cols: 9
             rows: 9
+            padding_y: 50
+            size_hint: 1, 0.5
             on_parent:
-                root.addInputBoxes()
-        Button:
-            size_hint: 1, .1
-            text: 'Confirm'
-            on_release: 
-                root.get_adjustment()
+                root.add_cell_buttons()
+
+        GridLayout:
+            id: inputs
+            cols: 10
+            rows: 1
+            size_hint: 1, 0.4
+            row_default_height: self.height/5
+            row_force_default: True
+            padding: 5, 10
+            spacing: 5
+            on_parent:
+                root.add_input_buttons()
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+            padding:50, 10
+            ButtonPrimary:
+                text: 'Solve'
+                on_release: 
+                    root.solve()
 
 <SolutionPage>:
     name: 'solutionPage'
@@ -43,18 +96,33 @@
     BoxLayout:
         orientation: 'vertical'
         padding: 10
-        
+
         GridLayout:
             id: grid
             cols: 9
             rows: 9
+            padding_y: 50
+            size_hint: 1, 0.5
             on_parent:
                 root.showSolution()
-        Button:
-            size_hint: 1, .1
-            text: 'Return to Home'
-            on_release: 
-                root.manager.current = 'mainPage'
+
+        GridLayout:
+            cols: 1
+            rows: 1
+            size_hint: 1, 0.4
+            row_default_height: self.height/5
+            row_force_default: True
+            padding: 5, 10
+            spacing: 5
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+            padding:50, 10
+            ButtonPrimary:
+                text: 'Return to Home'
+                on_release: 
+                    root.manager.current = 'mainPage'
 
 <NoSolutionPage>:
     name: 'noSolutionPage'
@@ -63,13 +131,17 @@
         padding: 10
         
         Label:
-            text: '[color=434445]No Solution For This Sudoku[/color]'
+            text: 'No Solution For This Sudoku'
+            color: 0, 0, 0, 1
             markup: True
-        Button:
-            size_hint: 1, .1
-            text: 'Return to Home'
-            on_release: 
-                root.manager.current = 'mainPage'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+            padding:50, 10
+            ButtonPrimary:
+                text: 'Return to Home'
+                on_release: 
+                    root.manager.current = 'mainPage'
 
 <NoSudokuPage>:
     name: 'noSudokuPage'
@@ -78,11 +150,14 @@
         padding: 10
         
         Label:
-            text: '[color=434445]No Sudoku Found[/color]'
+            text: 'No Sudoku Found'
+            color: 0, 0, 0, 1
             markup: True
-        Button:
-            size_hint: 1, .1
-            text: 'Return to Home'
-            on_release: 
-                root.manager.current = 'mainPage'
-
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+            padding:50, 10
+            ButtonPrimary:
+                text: 'Return to Home'
+                on_release: 
+                    root.manager.current = 'mainPage'
