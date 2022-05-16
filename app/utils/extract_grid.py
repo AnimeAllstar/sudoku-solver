@@ -123,6 +123,6 @@ def extract_grid(img):
 
     # warp the image
     img_warped = cv.warpPerspective(img_proc, real_grid, (width, height))
-
+    
     # invert the image
     return img_warped

@@ -56,6 +56,7 @@ def find_digit(cell):  # not yet done
         # crop the image
         ROI = cell[y : y + h, x : x + w]
         return ROI
+    return None
 
 
 def grid_to_array(grid):
@@ -95,15 +96,17 @@ def grid_to_array(grid):
             if cell_has_digit(tmp_cell):
                 # crop the image
                 digit = find_digit(cropped_cells[i][j])
+                if digit is None:
+                    digits[i][j] = 0
+                else:
+                    # resize for prediction
+                    digit = cv.resize(digit, (28, 28))
+                    digit = digit.astype('float32')
+                    digit = digit.reshape((-1, 28, 28, 1))
+                    digit = digit / 255.0
 
-                # resize for prediction
-                digit = cv.resize(digit, (28, 28))
-                digit = digit.astype('float32')
-                digit = digit.reshape((-1, 28, 28, 1))
-                digit = digit / 255.0
-
-                # predict
-                digits[i][j] = model.predict(digit)
+                    # predict
+                    digits[i][j] = model.predict(digit)
             else:
                 digits[i][j] = 0
 
