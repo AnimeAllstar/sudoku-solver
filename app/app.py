@@ -18,6 +18,7 @@ from utils.utils import read_img
 from utils.extract_grid import extract_grid
 from utils.grid_to_array import grid_to_array
 from functools import partial
+from new_classifier.model_business import train_model, eval_model
 
 # define widgets properties
 screens = Builder.load_file("screens.kv")
@@ -265,4 +266,6 @@ class SudokuSolverApp(App):
 
 
 if __name__ == '__main__':
-    SudokuSolverApp().run()
+    # SudokuSolverApp().run()
+    train_model()
+    eval_model()
