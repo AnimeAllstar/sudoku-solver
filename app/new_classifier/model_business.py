@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from new_classifier.digit_classifier import DigitClassifier
 from utils.utils import read_img
-from sklearn.model_selection import train_test_split 
+from sklearn.model_selection import train_test_split
 
 
 def train_model():
@@ -25,7 +25,6 @@ def train_model():
     y_train = np.concatenate((y_train, y_train_2))
     model = DigitClassifier()
     model.fit(X_train, y_train)
-
 
 
 def test_model():

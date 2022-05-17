@@ -38,6 +38,7 @@ def find_grid(img):
             return approx
     return None
 
+
 def order_the_corners(grid_points):
     # convert the data points to vector of tuples
     corners = [(grid[0][0], grid[0][1]) for grid in grid_points]
@@ -123,6 +124,6 @@ def extract_grid(img):
 
     # warp the image
     img_warped = cv.warpPerspective(img_proc, real_grid, (width, height))
-    
+
     # invert the image
     return img_warped

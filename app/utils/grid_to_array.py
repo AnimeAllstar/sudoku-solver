@@ -1,5 +1,3 @@
-from operator import truediv
-import re
 import cv2 as cv
 import numpy as np
 from new_classifier.digit_classifier import DigitClassifier
