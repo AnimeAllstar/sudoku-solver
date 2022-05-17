@@ -3,7 +3,6 @@ import re
 import cv2 as cv
 import numpy as np
 from our_classifier.digit_classifier import DigitClassifier
-from utils.extract_grid import process_image
 
 
 def cell_has_digit(cell):

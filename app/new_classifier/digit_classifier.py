@@ -47,7 +47,10 @@ class DigitClassifier:
 
     def fit(self, X, y):
         # train the model
-        self.model.fit(X, y, epochs=10)
+        self.model.fit(
+            X, y, 
+            batch_size=32, 
+            epochs=10)
 
         # save the model
         self.model.save("./new_classifier/saved_model/digit_classifier.h5")

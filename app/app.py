@@ -90,7 +90,7 @@ class CameraPage(Screen):
             # get image from the path
             img = read_img("./temp/images/input_image.jpg")
         else:
-            img = read_img("./temp/images/test_image.png")
+            img = read_img("./temp/images/test_image.jpeg")
 
         # extract grid from the image
         img_grid = extract_grid(img)
@@ -266,6 +266,6 @@ class SudokuSolverApp(App):
 
 
 if __name__ == '__main__':
-    # SudokuSolverApp().run()
-    train_model()
-    eval_model()
+    SudokuSolverApp().run()
+    # train_model()
+    # eval_model()
