@@ -9,6 +9,7 @@ numpy = "*"
 tensorflow = "*"
 pandas = "*"
 kivy = "*"
+scikit-learn = "*"
 
 [dev-packages]
 black = "*"
