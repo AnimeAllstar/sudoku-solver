@@ -90,7 +90,7 @@ class CameraPage(Screen):
             # get image from the path
             img = read_img("./temp/images/input_image.jpg")
         else:
-            img = read_img("./temp/images/test_image.jpeg")
+            img = read_img("./temp/images/test_image.jpg")
 
         # extract grid from the image
         img_grid = extract_grid(img)
