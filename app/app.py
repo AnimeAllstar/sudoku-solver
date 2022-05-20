@@ -18,6 +18,7 @@ from utils.utils import read_img
 from utils.extract_grid import extract_grid
 from utils.grid_to_array import grid_to_array
 from functools import partial
+from new_classifier.model_business import train_model, eval_model
 
 # define widgets properties
 screens = Builder.load_file("screens.kv")
@@ -89,7 +90,7 @@ class CameraPage(Screen):
             # get image from the path
             img = read_img("./temp/images/input_image.jpg")
         else:
-            img = read_img("./temp/images/test_image.png")
+            img = read_img("./temp/images/test_image.jpg")
 
         # extract grid from the image
         img_grid = extract_grid(img)
@@ -266,3 +267,5 @@ class SudokuSolverApp(App):
 
 if __name__ == '__main__':
     SudokuSolverApp().run()
+    # train_model()
+    # eval_model()

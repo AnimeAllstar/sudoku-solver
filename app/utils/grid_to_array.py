@@ -1,9 +1,6 @@
-from operator import truediv
-import re
 import cv2 as cv
 import numpy as np
-from our_classifier.digit_classifier import DigitClassifier
-from utils.extract_grid import process_image
+from new_classifier.digit_classifier import DigitClassifier
 
 
 def cell_has_digit(cell):
