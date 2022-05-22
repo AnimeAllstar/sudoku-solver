@@ -1,10 +1,12 @@
 import tensorflow as tf
+assert tf.__version__.startswith('2')
 import cv2 as cv
 import numpy as np
 import pandas as pd
 from new_classifier.digit_classifier import DigitClassifier
 from utils.utils import read_img
 from sklearn.model_selection import train_test_split
+from os import path
 
 
 def train_model():
@@ -24,6 +26,8 @@ def train_model():
     X_train = np.concatenate((X_train, X_train_2))
     y_train = np.concatenate((y_train, y_train_2))
     model = DigitClassifier()
+    if model.model is None:
+        model.build()
     model.fit(X_train, y_train)
 
 
@@ -33,6 +37,8 @@ def test_model():
     X_test = X_test.reshape(-1, 28, 28, 1).astype('float32')
     X_test = X_test / 255.0
     model = DigitClassifier()
+    if model.model is None:
+        model.build()
     predict = model.predict(X_test)
     print(predict)
 
@@ -54,6 +60,8 @@ def eval_model():
     X_test = np.concatenate((X_test, X_test_2))
     y_test = np.concatenate((y_test, y_test_2))
     model = DigitClassifier()
+    if model.model is None:
+        model.build()
     model.evaluate(X_test, y_test)
 
 
@@ -64,5 +72,17 @@ def test_with_single_image():
     X = X.reshape((-1, 28, 28, 1)).astype('float32')
     X = X / 255.0
     model = DigitClassifier()
+    if model.model is None:
+        model.build()
     predict = model.predict(X)
     print(predict)
+
+def convert_to_lite():
+    model = DigitClassifier().model
+    if model.model is None:
+        raise Exception('no saved model')
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    our_tflite_model = converter.convert()
+    open("./new_classifier/saved_model/digit_classifier.tflite", "wb").write(our_tflite_model)
+
+

@@ -1,3 +1,4 @@
+from new_classifier.model_business import convert_to_lite
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.label import Label
@@ -18,7 +19,7 @@ from utils.utils import read_img
 from utils.extract_grid import extract_grid
 from utils.grid_to_array import grid_to_array
 from functools import partial
-from new_classifier.model_business import train_model, eval_model
+from new_classifier.model_business import convert_to_lite
 
 # define widgets properties
 screens = Builder.load_file("screens.kv")
@@ -66,7 +67,7 @@ class CameraPage(Screen):
     def update_camera(self, *args):
         # read frame from our video capture object
         ret, frame = self.capture.read()
-
+        print(type(frame))
         # flip the image horizontally
         buffer = cv.flip(frame, 0).tobytes()
         # create a texture with size of the frame
@@ -266,6 +267,5 @@ class SudokuSolverApp(App):
 
 
 if __name__ == '__main__':
-    SudokuSolverApp().run()
-    # train_model()
-    # eval_model()
+    # SudokuSolverApp().run()
+    convert_to_lite()
