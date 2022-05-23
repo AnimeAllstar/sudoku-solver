@@ -11,6 +11,8 @@ pandas = "*"
 kivy = "*"
 scikit-learn = "*"
 protobuf = "==3.20.1"
+pyjnius = "*"
+install-jdk = "*"
 
 [dev-packages]
 black = "*"
