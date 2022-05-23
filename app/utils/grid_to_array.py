@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 from new_classifier.digit_classifier import DigitClassifier
-
+from new_classifier.model_lite_android import DigitClassifierAndroid
 
 def cell_has_digit(cell):
     """
@@ -71,7 +71,7 @@ def grid_to_array(grid):
     digits = np.zeros((9, 9), dtype=np.int)
 
     # our model
-    model = DigitClassifier()
+    model = DigitClassifierAndroid()
 
     for i in range(9):
         for j in range(9):
@@ -89,7 +89,6 @@ def grid_to_array(grid):
                 j * cell_w + cell_w // 4 : j * cell_w + 3 * (cell_w // 4),
             ]
 
-            # not yet done
             if cell_has_digit(tmp_cell):
                 # crop the image
                 digit = find_digit(cropped_cells[i][j])

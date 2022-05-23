@@ -1,4 +1,3 @@
-from new_classifier.model_business import convert_to_lite
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.label import Label
@@ -19,7 +18,6 @@ from utils.utils import read_img
 from utils.extract_grid import extract_grid
 from utils.grid_to_array import grid_to_array
 from functools import partial
-from new_classifier.model_business import convert_to_lite
 
 # define widgets properties
 screens = Builder.load_file("screens.kv")
@@ -30,22 +28,23 @@ predicted_digits = np.zeros(shape=(9, 9))
 # 9x9 matrix to save the solution of the sudoku
 solution = np.zeros(shape=(9, 9))
 
-
 class Cell(ToggleButton):
     pass
-
-
-class ButtonCell(Cell):
-    pass
-
-
-class LabelCell(Cell):
-    pass
-
 
 class ButtonInput(Button):
     pass
 
+class ButtonCell(Cell):
+    pass
+
+class LabelCell(Cell):
+    pass
+
+class NoSolutionPage(Screen):
+    pass
+
+class NoSudokuPage(Screen):
+    pass
 
 class CameraPage(Screen):
     def __init__(self, **kw):
@@ -227,15 +226,6 @@ class CorrectionPage(Screen):
         else:
             self.manager.current = 'noSolutionPage'
 
-
-class NoSolutionPage(Screen):
-    pass
-
-
-class NoSudokuPage(Screen):
-    pass
-
-
 class SolutionPage(Screen):
     def __init__(self, **kw):
         self.solution_labels = np.ndarray(shape=(9, 9), dtype=Label)
@@ -267,5 +257,4 @@ class SudokuSolverApp(App):
 
 
 if __name__ == '__main__':
-    # SudokuSolverApp().run()
-    convert_to_lite()
+    SudokuSolverApp().run()

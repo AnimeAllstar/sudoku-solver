@@ -85,4 +85,3 @@ def convert_to_lite():
     our_tflite_model = converter.convert()
     open("./new_classifier/saved_model/digit_classifier.tflite", "wb").write(our_tflite_model)
 
-
