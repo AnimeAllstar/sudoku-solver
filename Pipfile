@@ -18,6 +18,7 @@ pip = "*"
 wheel = "*"
 buildozer = "*"
 scikit-learn = "*"
+certifi = "*"
 
 [dev-packages]
 black = "*"
