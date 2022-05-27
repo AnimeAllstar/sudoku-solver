@@ -134,3 +134,6 @@ dmypy.json
 
 # temporary files
 **/temp/
+
+# buildozer
+.buildozer
