@@ -16,9 +16,9 @@ virtualenv = "*"
 install-jdk = "*"
 pip = "*"
 wheel = "*"
-buildozer = "*"
 scikit-learn = "*"
 certifi = "*"
+buildozer = "*"
 
 [dev-packages]
 black = "*"
@@ -26,6 +26,3 @@ py-sudoku = "*"
 
 [requires]
 python_version = "3.10"
-
-[pipenv]
-allow_prereleases = true

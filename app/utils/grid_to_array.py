@@ -1,7 +1,5 @@
 import cv2 as cv
 import numpy as np
-from new_classifier.digit_classifier import DigitClassifier
-from new_classifier.model_lite_android import DigitClassifierAndroid
 
 def cell_has_digit(cell):
     """
@@ -56,7 +54,7 @@ def find_digit(cell):  # not yet done
     return None
 
 
-def grid_to_array(grid):
+def grid_to_array(grid, isMobile=False):
     """
     returns a numpy array of the grid
     """
@@ -71,8 +69,15 @@ def grid_to_array(grid):
     digits = np.zeros((9, 9), dtype=np.int)
 
     # our model
-    model = DigitClassifierAndroid()
-
+    # TODO: make the model work on android and laptop
+    if isMobile:
+        # from classifier.model_lite_android import DigitClassifierAndroid
+        # model = DigitClassifierAndroid()
+        pass
+    else:
+        from classifier.digit_classifier import DigitClassifier
+        model = DigitClassifier()
+        
     for i in range(9):
         for j in range(9):
             cropped_cells[i][j] = grid[
@@ -99,10 +104,13 @@ def grid_to_array(grid):
                     digit = cv.resize(digit, (28, 28))
                     digit = digit.astype('float32')
                     digit = digit.reshape((-1, 28, 28, 1))
-                    digit = digit / 255.0
-
+                    digit = digit / 255.0 
+                    
                     # predict
-                    digits[i][j] = model.predict(digit)
+                    if isMobile:
+                        digits[i][j] = 0
+                    else:
+                        digits[i][j] = model.predict(digit)
             else:
                 digits[i][j] = 0
 

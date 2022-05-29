@@ -1,3 +1,18 @@
+import os
+
+# allow arguments to be passed to the app
+os.environ["KIVY_NO_ARGS"] = "1"
+
+import cv2 as cv
+from pathlib import Path
+import numpy as np
+from solver.sudoku import Sudoku
+from utils.utils import read_img
+from utils.extract_grid import extract_grid
+from utils.grid_to_array import grid_to_array
+from functools import partial
+import argparse
+
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.label import Label
@@ -9,15 +24,6 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.core.window import Window
 
-
-import cv2 as cv
-from pathlib import Path
-import numpy as np
-from solver.sudoku import Sudoku
-from utils.utils import read_img
-from utils.extract_grid import extract_grid
-from utils.grid_to_array import grid_to_array
-from functools import partial
 
 # define widgets properties
 screens = Builder.load_file("screens.kv")
@@ -64,9 +70,14 @@ class CameraPage(Screen):
 
     # update the camera image (called constantly in CameraPage)
     def update_camera(self, *args):
+        
+        if not self.capture.isOpened():
+            print("Error opening camera")
+            self.on_leave()
+            return
+        
         # read frame from our video capture object
         ret, frame = self.capture.read()
-        print(type(frame))
         # flip the image horizontally
         buffer = cv.flip(frame, 0).tobytes()
         # create a texture with size of the frame
@@ -79,25 +90,31 @@ class CameraPage(Screen):
     # capture image from camera and predict numbers (use this photo button)
     def predict_numbers(self, test=False):
         global predicted_digits
-        # save image from camera to a path
-        ret, frame = self.capture.read()
-
-        # ensure directory exists
-        Path("./temp/images").mkdir(parents=True, exist_ok=True)
-
+        
         if not test:
-            cv.imwrite("./temp/images/input_image.jpg", frame)
-            # get image from the path
-            img = read_img("./temp/images/input_image.jpg")
+            if not self.capture.isOpened():
+                print("Error opening camera")
+                return
+        
+            # cv.imwrite("./temp/images/input_image.jpg", frame)
+            ret, frame = self.capture.read()
+            img = frame
         else:
-            img = read_img("./temp/images/test_image.jpg")
+            # ensure directory exists
+            Path("./temp/images").mkdir(parents=True, exist_ok=True)
+            
+            try:
+                img = read_img("./temp/images/test_image.jpg")
+            except:
+                print("Error reading image")
+                return
 
         # extract grid from the image
         img_grid = extract_grid(img)
 
         if img_grid is not None:
             # get the predicted array of digits
-            predicted_digits = grid_to_array(img_grid)
+            predicted_digits = grid_to_array(img_grid, isMobile=isMobile)
 
             # change screen to CorrectionPage
             self.manager.current = 'correctionPage'
@@ -110,23 +127,29 @@ class CorrectionPage(Screen):
         self.cells = np.ndarray(shape=(9, 9), dtype=ButtonCell)
         self.selected = None
         self.location = None
+        self._keyboard = None
         super().__init__(**kw)
 
     # bind keyboard events when screen is displayed
     def on_pre_enter(self, *args):
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        if isMobile:
+            pass
+        else:
+            self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+            self._keyboard.bind(on_key_down=self._on_keyboard_down)
         return super().on_pre_enter(*args)
 
     # release keyboard when leaving the screen
     def on_leave(self, *args):
-        self._keyboard.release()
-        return super().on_leave(*args)
+        if self._keyboard:
+            self._keyboard.release()
+            return super().on_leave(*args)
 
     # callback function that will be called when the keyboard is closed
     def _keyboard_closed(self):
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
+        if self._keyboard:
+            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+            self._keyboard = None
 
     # called when a key is pressed
     # if the key is a valid number, update the selected cell
@@ -247,6 +270,13 @@ class SolutionPage(Screen):
 
 class SudokuSolverApp(App):
     def build(self):
+        global isMobile
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-d', '--desktop', action='store_false')
+        args = parser.parse_args()
+        isMobile = args.desktop
+
         sm = ScreenManager(transition=NoTransition())
         sm.add_widget(CameraPage())
         sm.add_widget(CorrectionPage())
