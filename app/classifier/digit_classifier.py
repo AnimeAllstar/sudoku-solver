@@ -15,36 +15,36 @@ class DigitClassifier:
 
     def build(self):
         # create the layers
-            self.model = tf.keras.Sequential(
-                [
-                    # first convolutional + pooling layer
-                    Conv2D(
-                        filters=60,  # number of output filters
-                        kernel_size=5,  # w and h of the filter
-                        padding="same",  # to avoid edges being ignored
-                        activation="relu",  # transformation
-                        input_shape=(28, 28, 1),  # 28x28 pixels and 1 grayscale channel
-                    ),
-                    MaxPool2D(),  # combine the result of Conv2D
-                    # second convolutional + pooling layer
-                    Conv2D(32, 3, padding="same", activation="relu"),
-                    MaxPool2D(),
-                    # flatten input before passing to dense layer
-                    Flatten(),
-                    # first fully connected layer
-                    Dense(65, activation="relu"),
-                    Dropout(0.5),  # drop neurons to prevent overfitting
-                    # output layer
-                    Dense(10, activation="softmax"),
-                ]
-            )
+        self.model = tf.keras.Sequential(
+            [
+                # first convolutional + pooling layer
+                Conv2D(
+                    filters=60,  # number of output filters
+                    kernel_size=5,  # w and h of the filter
+                    padding="same",  # to avoid edges being ignored
+                    activation="relu",  # transformation
+                    input_shape=(28, 28, 1),  # 28x28 pixels and 1 grayscale channel
+                ),
+                MaxPool2D(),  # combine the result of Conv2D
+                # second convolutional + pooling layer
+                Conv2D(32, 3, padding="same", activation="relu"),
+                MaxPool2D(),
+                # flatten input before passing to dense layer
+                Flatten(),
+                # first fully connected layer
+                Dense(65, activation="relu"),
+                Dropout(0.5),  # drop neurons to prevent overfitting
+                # output layer
+                Dense(10, activation="softmax"),
+            ]
+        )
 
-            # build the neural network
-            self.model.compile(
-                optimizer="adam",
-                loss="sparse_categorical_crossentropy",
-                metrics=["accuracy"],
-            )
+        # build the neural network
+        self.model.compile(
+            optimizer="adam",
+            loss="sparse_categorical_crossentropy",
+            metrics=["accuracy"],
+        )
 
     def fit(self, X, y):
         # train the model

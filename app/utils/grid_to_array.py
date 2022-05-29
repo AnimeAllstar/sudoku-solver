@@ -1,19 +1,20 @@
 import cv2 as cv
 import numpy as np
 
+
 def cell_has_digit(cell):
     """
     returns true if the cell has a digit
     """
     num_white_pixel = np.sum(cell == 255)
     num_black_pixel = np.sum(cell == 0)
-    
+
     if num_black_pixel == 0:
         return 0
-    
+
     if num_white_pixel / num_black_pixel > 0.3:
         return 1
-    
+
     return 0
 
 
@@ -76,8 +77,9 @@ def grid_to_array(grid, isMobile=False):
         pass
     else:
         from classifier.digit_classifier import DigitClassifier
+
         model = DigitClassifier()
-        
+
     for i in range(9):
         for j in range(9):
             cropped_cells[i][j] = grid[
@@ -102,10 +104,10 @@ def grid_to_array(grid, isMobile=False):
                 else:
                     # resize for prediction
                     digit = cv.resize(digit, (28, 28))
-                    digit = digit.astype('float32')
+                    digit = digit.astype("float32")
                     digit = digit.reshape((-1, 28, 28, 1))
-                    digit = digit / 255.0 
-                    
+                    digit = digit / 255.0
+
                     # predict
                     if isMobile:
                         digits[i][j] = 0

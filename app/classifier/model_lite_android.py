@@ -10,20 +10,20 @@ InterpreterOptions = autoclass("org.tensorflow.lite.Interpreter$Options")
 TensorBuffer = autoclass("org.tensorflow.lite.support.tensorbuffer.TensorBuffer")
 ByteBuffer = autoclass("java.nio.ByteBuffer")
 
-class DigitClassifierAndroid():
+
+class DigitClassifierAndroid:
     def __init__(self, num_threads=None):
         model = File("./classifier/saved_model/digit_classifier.tflite")
         options = InterpreterOptions()
         if num_threads is not None:
-                options.setNumThreads(num_threads)
+            options.setNumThreads(num_threads)
         self.interpreter = Interpreter(model, options)
         self.interpreter.allocateTensors()
 
     def get_output_buffer(self):
         y_shape = self.interpreter.getOutputTensor(0).shape()
         y_type = self.interpreter.getOutputTensor(0).dataType()
-        self.y_buffer = TensorBuffer.createFixedSize(
-            y_shape,y_type)
+        self.y_buffer = TensorBuffer.createFixedSize(y_shape, y_type)
         self.y_buffer = self.y_buffer.getBuffer().rewind()
 
     def predict(self, X):
@@ -33,4 +33,3 @@ class DigitClassifierAndroid():
         prediction = np.array(self.y_buffer.getFloatArray())
         prediction = np.reshape(prediction)
         return np.argmax(prediction)
-

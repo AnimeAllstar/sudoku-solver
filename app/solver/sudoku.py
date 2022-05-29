@@ -19,7 +19,7 @@ class Sudoku:
         else:
             self.grid = np.zeros((self.N, self.N), dtype=int)
 
-    # setter 
+    # setter
     def set(self, row, col, num):
         self.grid[row][col] = num
 
@@ -36,7 +36,6 @@ class Sudoku:
             return True
         return False
 
-    
     def check_solvable(self, row, col):
         if row == self.N - 1 and col == self.N:
             return True
