@@ -1,6 +1,5 @@
 import cv2 as cv
 import numpy as np
-from new_classifier.digit_classifier import DigitClassifier
 
 
 def cell_has_digit(cell):
@@ -9,13 +8,13 @@ def cell_has_digit(cell):
     """
     num_white_pixel = np.sum(cell == 255)
     num_black_pixel = np.sum(cell == 0)
-    
+
     if num_black_pixel == 0:
         return 0
-    
+
     if num_white_pixel / num_black_pixel > 0.3:
         return 1
-    
+
     return 0
 
 
@@ -56,7 +55,7 @@ def find_digit(cell):  # not yet done
     return None
 
 
-def grid_to_array(grid):
+def grid_to_array(grid, isMobile=False):
     """
     returns a numpy array of the grid
     """
@@ -71,7 +70,15 @@ def grid_to_array(grid):
     digits = np.zeros((9, 9), dtype=np.int)
 
     # our model
-    model = DigitClassifier()
+    # TODO: make the model work on android and laptop
+    if isMobile:
+        # from classifier.model_lite_android import DigitClassifierAndroid
+        # model = DigitClassifierAndroid()
+        pass
+    else:
+        from classifier.digit_classifier import DigitClassifier
+
+        model = DigitClassifier()
 
     for i in range(9):
         for j in range(9):
@@ -89,7 +96,6 @@ def grid_to_array(grid):
                 j * cell_w + cell_w // 4 : j * cell_w + 3 * (cell_w // 4),
             ]
 
-            # not yet done
             if cell_has_digit(tmp_cell):
                 # crop the image
                 digit = find_digit(cropped_cells[i][j])
@@ -98,12 +104,15 @@ def grid_to_array(grid):
                 else:
                     # resize for prediction
                     digit = cv.resize(digit, (28, 28))
-                    digit = digit.astype('float32')
+                    digit = digit.astype("float32")
                     digit = digit.reshape((-1, 28, 28, 1))
                     digit = digit / 255.0
 
                     # predict
-                    digits[i][j] = model.predict(digit)
+                    if isMobile:
+                        digits[i][j] = 0
+                    else:
+                        digits[i][j] = model.predict(digit)
             else:
                 digits[i][j] = 0
 

@@ -8,9 +8,17 @@ opencv-python = "*"
 numpy = "*"
 tensorflow = "*"
 pandas = "*"
-kivy = "*"
-scikit-learn = "*"
+kivy = {extras = ["full"], version = "*"}
 protobuf = "==3.20.1"
+cython = "==0.29.19"
+pyjnius = "*"
+virtualenv = "*"
+install-jdk = "*"
+pip = "*"
+wheel = "*"
+scikit-learn = "*"
+certifi = "*"
+buildozer = "*"
 
 [dev-packages]
 black = "*"
@@ -18,6 +26,3 @@ py-sudoku = "*"
 
 [requires]
 python_version = "3.10"
-
-[pipenv]
-allow_prereleases = true
