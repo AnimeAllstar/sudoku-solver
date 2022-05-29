@@ -8,7 +8,7 @@ An app to detect and solve sudokus using your smartphone camera
 - install [pip](https://pypi.python.org/pypi/pip)
 - install [pipenv](https://pipenv.pypa.io/en/latest/)
 - run in project root:
-  - `pipenv install` to install dependencies
+  - `pipenv install --dev` to install dependencies
   - `pipenv shell` to activate virtualenv
 
 ## Development
